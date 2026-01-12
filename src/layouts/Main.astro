@@ -1,18 +1,20 @@
 ---
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import { SITE } from "@/config";
+import type { Lang } from "@/i18n/ui";
 
 type StringTitle = { pageTitle: string };
 type ArrayTitle = { pageTitle: [string, string]; titleTransition: string };
 
-type Props = (StringTitle | ArrayTitle) & { pageDesc?: string };
+type Props = (StringTitle | ArrayTitle) & { pageDesc?: string; lang?: Lang };
 
 const { props } = Astro;
+const lang = (props as { lang?: Lang }).lang || "en";
 
 const backUrl = SITE.showBackButton ? Astro.url.pathname : "/";
 ---
 
-<Breadcrumb />
+<Breadcrumb lang={lang} />
 <main data-backUrl={backUrl} id="main-content" class="app-layout pb-4">
   {
     "titleTransition" in props ? (
@@ -40,3 +42,4 @@ const backUrl = SITE.showBackButton ? Astro.url.pathname : "/";
     }
   });
 </script>
+

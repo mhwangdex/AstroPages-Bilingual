@@ -1,4 +1,5 @@
 import rss from "@astrojs/rss";
+
 import { getCollection } from "astro:content";
 import { getPath } from "@/utils/getPath";
 import getSortedPosts from "@/utils/getSortedPosts";

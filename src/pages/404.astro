@@ -16,15 +16,49 @@ import { SITE } from "@/config";
     <div class="mb-14 flex flex-col items-center justify-center">
       <h1 class="text-9xl font-bold text-accent">404</h1>
       <span aria-hidden="true">¯\_(ツ)_/¯</span>
-      <p class="mt-4 text-2xl sm:text-3xl">Page Not Found</p>
+      <p id="error-text" class="mt-4 text-2xl sm:text-3xl">Page Not Found</p>
       <LinkButton
+        id="home-link"
         href="/"
         class="my-6 text-lg underline decoration-dashed underline-offset-8"
       >
-        Go back home
+        <span id="home-text">Go back home</span>
       </LinkButton>
     </div>
   </main>
 
   <Footer />
 </Layout>
+
+<script is:inline>
+  (function() {
+    // Detect language from URL path or localStorage
+    const path = window.location.pathname;
+    const pathLang = path.startsWith('/zh/') ? 'zh' : (path.startsWith('/en/') ? 'en' : null);
+    const storedLang = localStorage.getItem('preferredLang');
+    const browserLang = (navigator.language || '').toLowerCase().startsWith('zh') ? 'zh' : 'en';
+    const lang = pathLang || storedLang || browserLang;
+    
+    const translations = {
+      zh: {
+        pageNotFound: '页面未找到',
+        goHome: '返回首页'
+      },
+      en: {
+        pageNotFound: 'Page Not Found',
+        goHome: 'Go back home'
+      }
+    };
+    
+    const t = translations[lang] || translations.en;
+    
+    const errorText = document.getElementById('error-text');
+    const homeText = document.getElementById('home-text');
+    const homeLink = document.getElementById('home-link');
+    
+    if (errorText) errorText.textContent = t.pageNotFound;
+    if (homeText) homeText.textContent = t.goHome;
+    if (homeLink) homeLink.href = '/' + lang + '/';
+  })();
+</script>
+

@@ -1,4 +1,4 @@
-import { BLOG_PATH } from "@/content.config";
+import { BLOG_PATH } from "@/config";
 import { slugifyStr } from "./slugify";
 
 /**
@@ -13,21 +13,28 @@ export function getPath(
   filePath: string | undefined,
   includeBase = true
 ) {
+  // Extract language prefix from id (e.g., "zh/welcome" -> "zh")
+  const idParts = id.split("/");
+  const langPrefix = idParts.length > 1 ? idParts[0] : "";
+  const slug = idParts.length > 1 ? idParts.slice(1).join("/") : id;
+
   const pathSegments = filePath
     ?.replace(BLOG_PATH, "")
     .split("/")
     .filter(path => path !== "") // remove empty string in the segments ["", "other-path"] <- empty string will be removed
     .filter(path => !path.startsWith("_")) // exclude directories start with underscore "_"
-    .slice(0, -1) // remove the last segment_ file name_ since it's unnecessary
+    .filter(path => path !== langPrefix) // exclude language directory from path segments
+    .slice(0, -1) // remove the last segment (file name) since it's unnecessary
     .map(segment => slugifyStr(segment)); // slugify each segment path
 
-  const basePath = includeBase ? "/posts" : "";
+  // Build base path with language prefix for i18n routing
+  const basePath = includeBase
+    ? langPrefix
+      ? `/${langPrefix}/posts`
+      : "/posts"
+    : "";
 
-  // Making sure `id` does not contain the directory
-  const blogId = id.split("/");
-  const slug = blogId.length > 0 ? blogId.slice(-1) : blogId;
-
-  // If not inside the sub-dir, simply return the file path
+  // If not inside the sub-dir (other than lang), simply return the file path
   if (!pathSegments || pathSegments.length < 1) {
     return [basePath, slug].join("/");
   }

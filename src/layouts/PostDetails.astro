@@ -14,13 +14,18 @@ import { slugifyStr } from "@/utils/slugify";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
 import { SITE } from "@/config";
+import { useTranslations, type Lang } from "@/i18n/ui";
 
 type Props = {
   post: CollectionEntry<"blog">;
   posts: CollectionEntry<"blog">[];
+  lang?: "zh" | "en";
 };
 
-const { post, posts } = Astro.props;
+const { post, posts, lang: propLang } = Astro.props;
+// Extract lang from post ID if not provided
+const lang = propLang || (post.id.startsWith("zh/") ? "zh" : "en") as Lang;
+const t = useTranslations(lang);
 
 const {
   title,
@@ -83,8 +88,8 @@ const nextPost =
 ---
 
 <Layout {...layoutProps}>
-  <Header />
-  <BackButton />
+  <Header lang={lang} />
+  <BackButton lang={lang} />
   <main
     id="main-content"
     class:list={["app-layout pb-12", { "mt-8": !SITE.showBackButton }]}
@@ -97,7 +102,7 @@ const nextPost =
       {title}
     </h1>
     <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" lang={lang} />
       <span
         aria-hidden="true"
         class:list={[
@@ -105,7 +110,7 @@ const nextPost =
           { hidden: !SITE.editPost.enabled || hideEditPost },
         ]}>|</span
       >
-      <EditPost {hideEditPost} {post} class="max-sm:hidden" />
+      <EditPost {hideEditPost} {post} class="max-sm:hidden" lang={lang} />
     </div>
     <article
       id="article"
@@ -116,15 +121,15 @@ const nextPost =
 
     <hr class="my-8 border-dashed" />
 
-    <EditPost class="sm:hidden" {hideEditPost} {post} />
+    <EditPost class="sm:hidden" {hideEditPost} {post} lang={lang} />
 
     <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
-      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />)}
+      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" lang={lang} />)}
     </ul>
 
-    <BackToTopButton />
+    <BackToTopButton lang={lang} />
 
-    <ShareLinks />
+    <ShareLinks lang={lang} />
 
     <hr class="my-6 border-dashed" />
 
@@ -138,7 +143,7 @@ const nextPost =
           >
             <IconChevronLeft class="inline-block flex-none rtl:rotate-180" />
             <div>
-              <span>Previous Post</span>
+              <span>{t("post.previous")}</span>
               <div class="text-sm text-accent/85">{prevPost.title}</div>
             </div>
           </a>
@@ -151,7 +156,7 @@ const nextPost =
             class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"
           >
             <div>
-              <span>Next Post</span>
+              <span>{t("post.next")}</span>
               <div class="text-sm text-accent/85">{nextPost.title}</div>
             </div>
             <IconChevronRight class="inline-block flex-none rtl:rotate-180" />
@@ -160,7 +165,7 @@ const nextPost =
       }
     </div>
   </main>
-  <Footer />
+  <Footer lang={lang} />
 </Layout>
 
 <script is:inline data-astro-rerun>
