@@ -6,4 +6,4 @@ draft: false
 featured: false
 tags: []
 ---
-![](generated-8156306f-3a43-404d-b187-4972eddf569c.png)
+ooo
